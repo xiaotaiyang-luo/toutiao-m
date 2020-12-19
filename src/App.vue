@@ -1,9 +1,12 @@
 <template>
   <div id="app">
-    <i class="toutiao toutiao-dianzan2"></i>
-    <van-button type="primary">主要按钮</van-button>
-    <!-- 路由占位符 -->
-    <router-view />
+
+    <!-- keep-alive 是 Vue 的内置组件，当它包裹动态组件时，会缓存不活动的组件实例，而不是销毁它们 -->
+    <!--include表示需要缓存的组件  LayoutIndex表示需要缓存的组件  name-->
+    <keep-alive include="LayoutIndex">
+      <!-- 路由占位符 -->
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 

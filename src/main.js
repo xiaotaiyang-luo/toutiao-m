@@ -8,9 +8,12 @@ import Vant from 'vant';
 // 导入 Vant 全局样式
 import 'vant/lib/index.css';
 
+// 导入动态设置 REM 的基准值
+import 'amfe-flexible'
 
-import '@/components/css/index.css'
-
+import '@/components/css/index.less'
+// 加载初始化的时间处理
+import '@/utils/dayjs'
 Vue.config.productionTip = false
 
 // 注册使用 Vant 组件库
