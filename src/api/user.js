@@ -34,3 +34,23 @@ export const addFollowUser = (userId) => {
 export const removeFollowUser = (userId) => {
     return Delete(`/app/v1_0/user/followings/${userId}`)
 }
+
+
+// 收藏文章
+export const addCollect = (articleId) => {
+    return Post('/app/v1_0/article/collections', { target: articleId })
+}
+// 取消收藏文章
+export const removeCollect = (articleId) => {
+    return Delete(`/app/v1_0/article/collections/${articleId}`)
+}
+
+// 点赞文章
+export const addLikeArticle = (articleId) => {
+    return Post('/app/v1_0/article/likings', { target: articleId })
+}
+
+// 取消点赞文章
+export const removeLikeArticle = (articleId) => {
+    return Delete(`/app/v1_0/article/likings/${articleId}`)
+}

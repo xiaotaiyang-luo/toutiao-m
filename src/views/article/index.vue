@@ -24,7 +24,23 @@
           <div slot="title" class="user-name">{{articleList.aut_name}}</div>
           <div slot="label" class="publish-date">{{articleList.pubdate | relativeTime}}</div>
           <!-- 关注的按钮组件  -->
-          <follow-btn @update-follow='articleList.is_followed = $event' :user-id='articleList.aut_id' :is-follow='articleList.is_followed'></follow-btn>
+          <!-- 模版中的$event 是事件参数，也就是子组件传递过来的参数
+          当传递给子组件的数据既要使用还要修改，
+          除了可以通过父子组件传参的形式传递数据，还可以通过 v-model 实现父组件传值给子组件，
+          在父组件使用的这个组件的标签上利用 v-model 向子组件传参，
+          子组件中在props中接收两个默认参数，value：表示接收的数据，input表示子组件传参时$emit绑定的事件
+          这两个默认的参数名称可以在子组件的  model 中进行自定义 model:{prop:'自定义的接收数据名称'，event:'自定义的事件名称'}
+          这个v-model 相当于下面的传递和修改的简写方式
+          传递：
+          :is-follow='articleList.is_followed'
+          修改：
+           @update-follow='articleList.is_followed = $event' 
+          需要注意的是：
+              **在子组件中依旧需要使用 props 进行数据的接收。数据名称与自定义数据名称一致，如果有自定义的话，没有的话则为value
+              ** 子组件修改父组件数据信息的时候，依旧需要传一个事件进修改 $emit('自定义的事件名称'，需要传递的数据)
+           -->
+          <follow-btn class="follow-btn" v-model="articleList.is_followed" :user-id='articleList.aut_id'></follow-btn>
+          <!-- 使用父子组件通信传递数据 和传递修改的数据 <follow-btn class="follow-btn" @update-follow='articleList.is_followed = $event' :user-id='articleList.aut_id' :is-follow='articleList.is_followed'></follow-btn> -->
           <!-- /关注的按钮组件  -->
         </van-cell>
         <!-- /用户信息 -->
@@ -32,6 +48,19 @@
         <!-- 文章内容 -->
         <div class="article-content markdown-body" v-html="articleList.content" ref='contentRef'></div>
         <van-divider>正文结束</van-divider>
+        <!-- 底部区域 -->
+        <div class="article-bottom">
+          <van-button class="comment-btn" type="default" round size="small">写评论</van-button>
+          <van-icon name="comment-o" badge="123" color="#777" />
+          <!-- 收藏文章按钮组件 -->
+          <collect-article class="btn-item" v-model="articleList.is_collected " :article-id='articleList.art_id'></collect-article>
+          <!-- / 收藏文章按钮组件 -->
+          <!-- 点赞文章组件 -->
+          <like-article v-model="articleList.attitude " :article-id='articleList.art_id'> </like-article>
+          <!-- /点赞文章组件 -->
+          <van-icon name="share" color="#777777"></van-icon>
+        </div>
+        <!-- /底部区域 -->
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -51,15 +80,6 @@
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
 
-    <!-- 底部区域 -->
-    <div class="article-bottom">
-      <van-button class="comment-btn" type="default" round size="small">写评论</van-button>
-      <van-icon name="comment-o" info="123" color="#777" />
-      <van-icon color="#777" name="star-o" />
-      <van-icon color="#777" name="good-job-o" />
-      <van-icon name="share" color="#777777"></van-icon>
-    </div>
-    <!-- /底部区域 -->
   </div>
 </template>
 
@@ -67,10 +87,15 @@
 import { getArticlePage } from "@/api/article";
 import { ImagePreview } from "vant"; // 这个预览图片的插件与别的插件不同，不是通过html结构的形式来使用，而是通过函数调用的方式，所以必须要单独引入它的函数
 import FollowBtn from "@/components/follow-user";
+import CollectArticle from "@/components/collect-article";
+import likeArticle from "@/components/like-article";
+
 export default {
   name: "ArticleIndex",
   components: {
     FollowBtn,
+    CollectArticle,
+    likeArticle,
   },
   props: {
     //   接收传参，路由传参，父组件传参都可以，复用性更好更便于维护
@@ -83,7 +108,7 @@ export default {
     return {
       articleList: {}, // 文章详情数据
       isLoad: true, // 是否显示 文章 加载中
-      errStatus: 0,
+      errStatus: 0, // 错误响应状态码
     };
   },
   computed: {},
@@ -259,13 +284,19 @@ export default {
       line-height: 46px;
       color: #a7a7a7;
     }
-    .van-icon {
+    /deep/ .van-icon {
       font-size: 40px;
       .van-info {
         font-size: 16px;
         background-color: #e22829;
       }
     }
+    // .btn-item {
+    //   border: none;
+    //   padding: 0;
+    //   height: 40px;
+    //   line-height: 40px;
+    // }
   }
 }
 </style>

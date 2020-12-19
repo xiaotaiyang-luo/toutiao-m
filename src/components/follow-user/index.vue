@@ -12,6 +12,11 @@ import { addFollowUser, removeFollowUser } from "@/api/user";
 export default {
   name: "FollowBtn",
   components: {},
+  //   自定义 v-model 的数据名称
+  model: {
+    prop: "isFollow", // 默认名称 value
+    event: "update-follow", // 默认名称 input
+  },
   props: {
     //   父组件传递的用户id
     userId: {
@@ -39,7 +44,7 @@ export default {
       // 点击关注或取消关注的时候，开启loading
       // 使用loading的好处是在用户点击了关注，取消关注时，数据未刷新成功时给一个反馈给用户，且在loading期间用户无法一直点击按钮，就不会因为用户一直点发起多次请求了
       this.followLoading = true;
-      if (this.articleList.is_followed) {
+      if (this.isFollow) {
         // 取消关注
         const res = await removeFollowUser(this.userId);
         // console.log(res);
@@ -48,7 +53,7 @@ export default {
         }
       } else {
         // 添加关注
-        const res = await addFollowUser(this.isFollow);
+        const res = await addFollowUser(this.userId);
         // console.log(res);
         let massage = "";
         if (res.status !== 201) {
