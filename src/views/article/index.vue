@@ -48,19 +48,28 @@
         <!-- 文章内容 -->
         <div class="article-content markdown-body" v-html="articleList.content" ref='contentRef'></div>
         <van-divider>正文结束</van-divider>
+        <!-- 评论列表  -->
+        <comment-list :list='commentList' ref="comment-box" :source="articleList.art_id" @comment-data='commentData = $event.total_count'></comment-list>
+        <!-- 评论列表  -->
         <!-- 底部区域 -->
         <div class="article-bottom">
-          <van-button class="comment-btn" type="default" round size="small">写评论</van-button>
-          <van-icon name="comment-o" badge="123" color="#777" />
+          <van-button class="comment-btn" type="default" round size="small" @click="isPostShow = true">写评论</van-button>
+          <van-icon name="comment-o" :badge="commentData" color="#777" @click="toComment" />
           <!-- 收藏文章按钮组件 -->
           <collect-article class="btn-item" v-model="articleList.is_collected " :article-id='articleList.art_id'></collect-article>
           <!-- / 收藏文章按钮组件 -->
           <!-- 点赞文章组件 -->
-          <like-article v-model="articleList.attitude " :article-id='articleList.art_id'> </like-article>
+          <like-article v-model="articleList.attitude" :article-id='articleList.art_id '> </like-article>
           <!-- /点赞文章组件 -->
           <van-icon name="share" color="#777777"></van-icon>
         </div>
         <!-- /底部区域 -->
+        <!-- 评论弹窗 -->
+        <van-popup v-model="isPostShow" position="bottom">
+          <comment-post :show='isPostShow' :article-id='articleList.art_id' @post-success='onPostSuccess'></comment-post>
+        </van-popup>
+        <!-- /评论弹窗 -->
+
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -79,23 +88,31 @@
       </div>
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
+    <!-- 评论回复弹出层 -->
 
+    <van-popup v-model="isReply" position="bottom" :style="{ height: '90%' }"> 
+      
+    </van-popup>
+    <!-- /评论回复弹出层 -->
   </div>
 </template>
 
 <script>
-import { getArticlePage } from "@/api/article";
+import { getArticlePage } from "@/api/article"; //导入获取文章详情数据请求
 import { ImagePreview } from "vant"; // 这个预览图片的插件与别的插件不同，不是通过html结构的形式来使用，而是通过函数调用的方式，所以必须要单独引入它的函数
-import FollowBtn from "@/components/follow-user";
-import CollectArticle from "@/components/collect-article";
-import likeArticle from "@/components/like-article";
-
+import FollowBtn from "@/components/follow-user"; // 导入关注的组件
+import CollectArticle from "@/components/collect-article"; // 导入收藏组件
+import likeArticle from "@/components/like-article"; // 导入点赞组件
+import CommentList from "./components/comment-list"; // 导入评论列表组件
+import CommentPost from "./components/comment-post"; // 导入评论输入发布组件
 export default {
   name: "ArticleIndex",
   components: {
     FollowBtn,
     CollectArticle,
     likeArticle,
+    CommentList,
+    CommentPost,
   },
   props: {
     //   接收传参，路由传参，父组件传参都可以，复用性更好更便于维护
@@ -109,6 +126,11 @@ export default {
       articleList: {}, // 文章详情数据
       isLoad: true, // 是否显示 文章 加载中
       errStatus: 0, // 错误响应状态码
+      commentData: 0, // 评论总数
+      isPostShow: false, // 控制是否显示弹出层
+      isReply: false, // 评论回复时的弹出层是否显示
+      // 评论列表的数据
+      commentList: [],
     };
   },
   computed: {},
@@ -173,6 +195,21 @@ export default {
           });
         };
       });
+    },
+    // 点击评论图标 平滑滚动到评论区域
+    toComment() {
+      // console.log(this.$refs["comment-box"].$el);
+      const dom = this.$refs["comment-box"].$el; // 获取评论区域的根节点
+      dom.scrollIntoView({
+        behavior: "smooth",
+      });
+    },
+
+    // 发布评论成功
+    onPostSuccess(data) {
+      this.isPostShow = false; // 关闭评论弹出层
+      // console.log(data.new_obj);
+      this.commentList.unshift(data.new_obj); //将发布的评论插入到评论数据列表的最前面
     },
   },
 };

@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { removeCollect, addCollect } from "@/api/user";
+import { removeCollect, addCollect } from "@/api/article";
 export default {
   name: "CollectArticle",
   components: {},
