@@ -17,7 +17,7 @@
     <van-tabs :swipe-threshold='1' class="channel-tabs" v-model="active" animated swipeable title-inactive-color="#777777" title-active-color='#333333' color='#3296fa' line-width='30px' line-height='4px'>
       <van-tab v-for="item in  channelsList" :key="item.id" :title="item.name">
         <!-- 文章列表组件标签  -->
-        <article-list :channel='item'></article-list>
+        <article-list :channel='item' :isActived='isActived'></article-list>
         <!-- /文章列表组件标签   -->
       </van-tab>
 
@@ -55,6 +55,7 @@ export default {
       //  定义数据接收频道列表
       channelsList: [],
       isChannelEditShow: false, // 是否弹出弹框
+      isActived: false,
     };
   },
   created() {
@@ -106,6 +107,18 @@ export default {
       // 关闭编辑频道弹层
       this.isChannelEditShow = boo;
     },
+  },
+  // 如果当前页面被缓存（keep-alive），会多出两个钩子函数：activated和deactivated
+  activated() {
+    // 进入页面的时候会触发，默认在mounted钩子函数触发后再触发该钩子函数
+    // console.log("进入了页面");
+    // 这里对isActived进行设置的主要原因是，要在文章列表组件页面还需要进行页面的缓存，但是要知道什么时候进入页面，什么时候离开页面才好设置缓存的预览的位置
+    this.isActived = true;
+  },
+  deactivated() {
+    // 离开页面时会触发该钩子函数
+    // console.log("离开了页面");
+    this.isActived = false;
   },
   components: {
     "article-list": ArticleList,

@@ -1,6 +1,6 @@
 <!-- 文章列表组件-->
 <template>
-  <div class="article-container">
+  <div class="article-container" ref='container'>
     <van-pull-refresh v-model="refreshing" @refresh="onRefresh" :success-text="refreshText" success-duration='1000' :head-height='100'>
       <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad" :error.sync="error" error-text="请求失败，点击重新加载">
         <!-- 文章列表  -->
@@ -29,7 +29,26 @@ export default {
       error: false,
       refreshing: false, // 控制是否下拉刷新
       refreshText: "刷新成功",
+      scrollTop: "",
     };
+  },
+  watch: {
+    // 利用侦听器实时监听isActived的变化
+    isActived() {
+      // 如果isActived为true，并且有滚动的上部距离。
+      if (this.isActived && this.scrollTop) {
+        // 则页面滚动的上部距离等于缓存的距离
+        this.$refs.container.scrollTop = this.scrollTop;
+      }
+    },
+  },
+  mounted() {
+    // 因为要操作dom元素，所以在mounted函数中操作
+    const _container = this.$refs.container;
+    // 监听这个页面的滚动事件，一旦发生滚动，就将其缓存到data中的scrollTop中去，方便下次进入本页面时进行位置时展示上次所预览的位置，提升用户体验感
+    _container.addEventListener("scroll", () => {
+      this.scrollTop = _container.scrollTop;
+    });
   },
   components: {
     ArticleItem,
@@ -38,6 +57,10 @@ export default {
     channel: {
       type: Object, // 表示数据为对象类型数据
       required: true, // 表示数据为必须数据，当接收不到时就报错
+    },
+    isActived: {
+      type: Boolean,
+      default: false,
     },
   },
   methods: {
