@@ -12,7 +12,7 @@
     <template #label>
       <div class="label-content">
         <span>{{comment.pubdate | relativeTime}}</span>
-        <van-button class="reply-btn" round size='mini' @click="replyComment">回复 {{comment.reply_count}}</van-button>
+        <van-button class="reply-btn" round size='mini' @click="$emit('reply-click',comment)">回复 {{comment.reply_count}}</van-button>
       </div>
     </template>
     <template #right-icon>
@@ -34,10 +34,6 @@ export default {
     comment: {
       type: Object,
       required: true,
-    },
-    replyShow: {
-      type: Boolean,
-      default: true,
     },
   },
 
@@ -65,13 +61,6 @@ export default {
         }
       }
       this.comment.is_liking = !this.comment.is_liking; // 进行视图更新
-    },
-
-    // 回复评论
-    replyComment() {
-      console.log(1);
-      console.log(!this.replyShow);
-      this.$emit("updata-reply", !this.replyShow);
     },
   },
 };

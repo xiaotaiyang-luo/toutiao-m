@@ -8,6 +8,8 @@ const Qa = () => import('@/views/qa')
 const Video = () => import('@/views/video')
 const Search = () => import('@/views/search')
 const Article = () => import('@/views/article')
+const UserProfile = () => import('@/views/user-profile')
+
 export default [{
     path: '/',
     component: Layout,
@@ -40,4 +42,8 @@ export default [{
     name: 'article',
     component: Article,
     props: true // 开启 props 传参，说白了局势把路由参数映射到组件的props属性中去，达到解耦路由参数的作用
+},
+{
+    path: '/user-profile',
+    component: UserProfile
 }]

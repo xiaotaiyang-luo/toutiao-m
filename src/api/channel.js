@@ -6,7 +6,7 @@ export const getAllChannel = () => {
 
 // 获取修改后的频道数据
 export const addUserChannel = (data) => {
-    return Patch('/app/v1_0/user/channels', data)
+    return Patch('/app/v1_0/user/channels', { channels: [data] })
 }
 // 删除指定用户频道
 export const deleteUserChannel = (channelId) => {

@@ -49,7 +49,7 @@
         <div class="article-content markdown-body" v-html="articleList.content" ref='contentRef'></div>
         <van-divider>正文结束</van-divider>
         <!-- 评论列表  -->
-        <comment-list :list='commentList' ref="comment-box" :source="articleList.art_id" @comment-data='commentData = $event.total_count'></comment-list>
+        <comment-list @reply-click="onReplyClick" :list='commentList' ref="comment-box" :sourceId="articleList.art_id" @comment-data='commentData = $event.total_count'></comment-list>
         <!-- 评论列表  -->
         <!-- 底部区域 -->
         <div class="article-bottom">
@@ -89,9 +89,10 @@
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
     <!-- 评论回复弹出层 -->
-
-    <van-popup v-model="isReply" position="bottom" :style="{ height: '90%' }"> 
-      
+    <!-- 弹层的渲染是懒渲染：也就是只有在第一次展示的时候才会渲染里面的内容，之后它的关闭和显示都是在切换显示状态，而并不会重新进行渲染 -->
+    <van-popup v-model="isReply" position="bottom" :style="{ height: '90%' }">
+      <!-- v-if   每次为true会重新进行渲染。为false则不进行渲染  解决回复评论内容不重新获取的问题-->
+      <comment-reply v-if="isReply" :articleId='articleId' :comment='currentComment' @click-close='isReply = false'></comment-reply>
     </van-popup>
     <!-- /评论回复弹出层 -->
   </div>
@@ -105,6 +106,7 @@ import CollectArticle from "@/components/collect-article"; // 导入收藏组件
 import likeArticle from "@/components/like-article"; // 导入点赞组件
 import CommentList from "./components/comment-list"; // 导入评论列表组件
 import CommentPost from "./components/comment-post"; // 导入评论输入发布组件
+import CommentReply from "./components/comment-reply";
 export default {
   name: "ArticleIndex",
   components: {
@@ -113,6 +115,7 @@ export default {
     likeArticle,
     CommentList,
     CommentPost,
+    CommentReply,
   },
   props: {
     //   接收传参，路由传参，父组件传参都可以，复用性更好更便于维护
@@ -131,6 +134,8 @@ export default {
       isReply: false, // 评论回复时的弹出层是否显示
       // 评论列表的数据
       commentList: [],
+      // 点击回复对应的评论内容
+      currentComment: {},
     };
   },
   computed: {},
@@ -210,6 +215,19 @@ export default {
       this.isPostShow = false; // 关闭评论弹出层
       // console.log(data.new_obj);
       this.commentList.unshift(data.new_obj); //将发布的评论插入到评论数据列表的最前面
+      const dom = this.$refs["comment-box"].$el; // 获取评论区域的根节点
+      // 不管在什么位置点击的发布评论，都能自动滑动到评论列表项，显示显示评论
+      setTimeout(() => {
+        dom.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 0);
+    },
+
+    // 点击回复，打开回复评论弹出层
+    onReplyClick(comment) {
+      this.currentComment = comment;
+      this.isReply = true;
     },
   },
 };

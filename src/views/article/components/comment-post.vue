@@ -20,6 +20,10 @@ export default {
       type: [Number, String, Object],
       required: true,
     },
+    artId: {
+      type: [Number, String, Object],
+      default: null,
+    },
   },
   data() {
     return {
@@ -51,12 +55,12 @@ export default {
   methods: {
     async publishComment() {
       const query = {
-        target: this.articleId, // 评论的目标id（评论文章即为文章id，评论回复即为评论id）
+        target: this.articleId.toString(), // 评论的目标id（评论文章即为文章id，评论回复即为评论id）
         content: this.inputComment, // 评论内容
-        art_id: null, // 文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id，对文章进行评论，不要传此参数
+        art_id: this.artId, // 文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id，对文章进行评论，不要传此参数
       };
       const res = await addComment(query);
-      //   console.log(res);
+      console.log(res);
       if (res.status === 201) {
         this.$toast("评论成功");
       } else if (res.status === 403) {

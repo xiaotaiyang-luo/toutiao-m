@@ -9,8 +9,8 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 dayjs.extend(relativeTime)
 // 然后配置为全局可用
 dayjs.locale('zh-cn') // 全局使用 要全局可用，还要记得在全局配置的文件中main.js中导入该dayjs.js
-// dayjs() 获取当前时间
-// dayjs().format('YYYY-MM-DD') 
+// dayjs() 则是能够获取当前时间，里面放上某个日期，则是表示获取基于里面的时间获取dayjs的格式日期
+// dayjs().format('YYYY-MM-DD')  而format专门用来处理日期格式化的
 
 // 注册全局过滤器  value为过滤接收过来的参数，relativeTime为过滤器名称
 Vue.filter('relativeTime', value => {

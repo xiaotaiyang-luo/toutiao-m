@@ -139,12 +139,7 @@ export const Put = (url, params) => {
     return request.put(url, params)
 }
 export const Patch = (url, params) => {
-    return request({
-        method: 'PATCH',
-        url: url,
-        data: {
-            channels: [params]
-        }
-    })
+
+    return request.patch(url, params)
 }
 

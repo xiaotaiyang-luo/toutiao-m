@@ -10,7 +10,7 @@
           <span class="text">{{userInfo.name}}</span>
         </div>
         <div class="right">
-          <van-button class="edit-btn" round plain type="default" size="mini">编辑资料</van-button>
+          <van-button class="edit-btn" round plain type="default" size="mini" to='/user-profile'>编辑资料</van-button>
         </div>
       </div>
       <div class="data-stats">
@@ -100,7 +100,7 @@ export default {
     // 登录成功，获取用户信息
     async loadUserInfo() {
       const res = await getUserSelfMsg();
-      console.log(res);
+      // console.log(res);
       if (res.status !== 200) {
         this.$toast("获取数据失败，请稍后重试");
       }
